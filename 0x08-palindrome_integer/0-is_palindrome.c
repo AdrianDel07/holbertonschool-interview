@@ -1,3 +1,4 @@
+#include "palindrome.h"
 
 /**
  * is_palindrome - checks whether or not a given unsigned integer
