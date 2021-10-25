@@ -86,5 +86,4 @@ def solveNQ():
         return
     return
 
-
 solveNQ()
