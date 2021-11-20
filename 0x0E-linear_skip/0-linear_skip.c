@@ -1,47 +1,47 @@
 #include "search.h"
-
 /**
- * linear_skip - Search for a value in a sorted skip list of integers
- * @list: Pointer to the head of the skip list
- * @value: The value to search for
- *
- * Return: Pointer to the first node where value is located
+ * linear_skip - searches for a value in a sorted skip list of integers
+ * @list: pointer to the head of the skip list to search in
+ * @value: the value to search for
+ * Return: NULL or a pointer to the node with the value
  */
 skiplist_t *linear_skip(skiplist_t *list, int value)
 {
-	skiplist_t *end;
+		skiplist_t *pass;
 
-	if (!list)
-		return (NULL);
-
-	while (list && list->express)
-	{
-		printf("Value checked at index [%d] = [%d]\n",
-		       (int) list->express->index, list->express->n);
-		if (value > list->express->n)
-			list = list->express;
-		else
-			break;
-	}
-
-	end = list;
-	if (list->express)
-		end = end->express;
-	else
-		while (end->next)
-			end = end->next;
-	printf("Value found between indexes [%d] and [%d]\n",
-		    (int) list->index, (int) end->index);
-
-	while (list->index <= end->index)
-	{
-		printf("Value checked at index [%d] = [%d]\n",
-		       (int) list->index, list->n);
-		if (value == list->n)
+		if (!list)
+			return (NULL);
+		pass = list;
+		while (pass->express)
+		{
+			printf("Value checked at index [%lu] = [%d]\n",
+				pass->express->index, pass->express->n);
+			if (pass->express->n >= value)
+			{
+				printf("Value found between indexes [%lu] and [%lu]\n",
+					pass->index, pass->express->index);
+				break;
+			}
+			pass = pass->express;
+		}
+		if (!pass->express)
+		{
+			list = pass;
+			while (list->next)
+				list = list->next;
+			printf("Value found between indexes [%lu] and [%lu]\n",
+				pass->index, list->index);
+		}
+		list = pass;
+		while (list != pass->express)
+		{
+			printf("Value checked at index [%lu] = [%d]\n",
+				list->index, list->n);
+			if (list->n == value)
+				break;
+			list = list->next;
+		}
+		if (list != pass->express)
 			return (list);
-		if (!list->next)
-			break;
-		list = list->next;
-	}
-	return (NULL);
+		return (NULL);
 }
