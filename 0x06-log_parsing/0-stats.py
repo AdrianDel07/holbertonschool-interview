@@ -1,47 +1,39 @@
 #!/usr/bin/python3
-"""
-Module that parses a log and prints stats to stdout
-"""
-from sys import stdin
+"""Log parsing """
 
-status_codes = {
-    "200": 0,
-    "301": 0,
-    "400": 0,
-    "401": 0,
-    "403": 0,
-    "404": 0,
-    "405": 0,
-    "500": 0
-}
+if __name__ == '__main__':
 
-size = 0
+    import sys
 
+    total_size = 0
+    counter = 0
+    entry_codes = ["200", "301", "400", "401", "403", "404", "405", "500"]
+    s = {k: 0 for k in entry_codes}
 
-def print_stats():
-    """Prints the accumulated logs"""
-    print("File size: {}".format(size))
-    for status in sorted(status_codes.keys()):
-        if status_codes[status]:
-            print("{}: {}".format(status, status_codes[status]))
+    def printing(s: dict, total_size: int) -> None:
+        """reads stdin line by line and computes metrics"""
+        print("File size: {:d}".format(total_size))
+        for k, v in sorted(s.items()):
+            if v:
+                print("{}: {}".format(k, v))
 
-
-if __name__ == "__main__":
-    count = 0
     try:
-        for line in stdin:
+        for line in sys.stdin:
+            counter += 1
+            data = line.split()
             try:
-                items = line.split()
-                size += int(items[-1])
-                if items[-2] in status_codes:
-                    status_codes[items[-2]] += 1
-            except:
+                code = data[-2]
+                if code in s:
+                    s[code] += 1
+            except BaseException:
                 pass
-            if count == 9:
-                print_stats()
-                count = -1
-            count += 1
+            try:
+                total_size += int(data[-1])
+            except BaseException:
+                pass
+            if counter % 10 == 0:
+                printing(s, total_size)
+        printing(s, total_size)
     except KeyboardInterrupt:
-        print_stats()
+        printing(s, total_size)
         raise
-    print_stats()
